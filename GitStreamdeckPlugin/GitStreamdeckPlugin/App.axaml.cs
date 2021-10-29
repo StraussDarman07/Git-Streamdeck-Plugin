@@ -1,10 +1,10 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using GitStreamdeckPlugin.ViewModels;
-using GitStreamdeckPlugin.Views;
+using Plugin.ViewModels;
+using Plugin.Views;
 
-namespace GitStreamdeckPlugin
+namespace Plugin
 {
     public class App : Application
     {

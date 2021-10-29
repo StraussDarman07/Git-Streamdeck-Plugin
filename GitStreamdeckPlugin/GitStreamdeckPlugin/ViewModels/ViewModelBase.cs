@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace GitStreamdeckPlugin.ViewModels
+namespace Plugin.ViewModels
 {
     public class ViewModelBase : ReactiveObject
     {

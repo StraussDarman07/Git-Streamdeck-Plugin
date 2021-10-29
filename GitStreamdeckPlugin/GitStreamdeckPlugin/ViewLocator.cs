@@ -1,9 +1,9 @@
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
-using GitStreamdeckPlugin.ViewModels;
 using System;
+using Plugin.ViewModels;
 
-namespace GitStreamdeckPlugin
+namespace Plugin
 {
     public class ViewLocator : IDataTemplate
     {
