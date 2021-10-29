@@ -4,8 +4,8 @@ using System.Text;
 
 namespace Plugin.ViewModels
 {
-    public class MainWindowViewModel : ViewModelBase
+    public class BranchViewModel : ViewModelBase
     {
-        public string Greeting => "Welcome to Avalonia!";
+        public string BranchName { get; set; }
     }
 }

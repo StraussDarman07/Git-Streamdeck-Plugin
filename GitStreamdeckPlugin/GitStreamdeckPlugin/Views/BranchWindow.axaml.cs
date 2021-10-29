@@ -4,9 +4,9 @@ using Avalonia.Markup.Xaml;
 
 namespace Plugin.Views
 {
-    public partial class MainWindow : Window
+    public partial class BranchWindow : Window
     {
-        public MainWindow()
+        public BranchWindow()
         {
             InitializeComponent();
 #if DEBUG

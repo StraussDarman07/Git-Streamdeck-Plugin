@@ -1,12 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <Nullable>enable</Nullable>
     <RootNamespace>Plugin</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="Models\" />
     <AvaloniaResource Include="Assets\**" />
     <None Remove=".gitignore" />
   </ItemGroup>
@@ -17,4 +16,18 @@
     <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="0.10.10" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.10" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\submodules\sdk\StreamdeckSDKCSharp\StreamdeckSDKCSharp.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="GitPlugin.axaml.cs">
+      <DependentUpon>GitPlugin.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\BranchWindow.axaml.cs">
+      <DependentUpon>BranchWindow.axaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="deploy.bat&#xD;&#xA;" />
+  </Target>
 </Project>

@@ -1,0 +1,1 @@
+xcopy /s /Y /d bin\Debug\netcoreapp3.1 %APPDATA%\Elgato\StreamDeck\Plugins\com.elgato.test.sdPlugin
