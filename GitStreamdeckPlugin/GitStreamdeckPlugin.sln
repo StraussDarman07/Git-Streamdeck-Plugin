@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31624.102
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibGit2Sharp", "..\submodules\git\LibGit2Sharp\LibGit2Sharp.csproj", "{6F6B1857-34D4-4C8D-A5E0-4D8F6FC0B271}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamdeckSDKCSharp", "..\submodules\sdk\StreamdeckSDKCSharp\StreamdeckSDKCSharp.csproj", "{01575C0D-F920-42FC-99DA-A3B85D8CCA2C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitStreamdeckPlugin", "GitStreamdeckPlugin\GitStreamdeckPlugin.csproj", "{7E7C5F03-E2FD-4DE0-9EE8-49E473A133ED}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6F6B1857-34D4-4C8D-A5E0-4D8F6FC0B271}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F6B1857-34D4-4C8D-A5E0-4D8F6FC0B271}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F6B1857-34D4-4C8D-A5E0-4D8F6FC0B271}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F6B1857-34D4-4C8D-A5E0-4D8F6FC0B271}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01575C0D-F920-42FC-99DA-A3B85D8CCA2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01575C0D-F920-42FC-99DA-A3B85D8CCA2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01575C0D-F920-42FC-99DA-A3B85D8CCA2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01575C0D-F920-42FC-99DA-A3B85D8CCA2C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E7C5F03-E2FD-4DE0-9EE8-49E473A133ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E7C5F03-E2FD-4DE0-9EE8-49E473A133ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E7C5F03-E2FD-4DE0-9EE8-49E473A133ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E7C5F03-E2FD-4DE0-9EE8-49E473A133ED}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0F6E0121-9F1F-451E-81B8-76F5A47903C2}
+	EndGlobalSection
+EndGlobal
