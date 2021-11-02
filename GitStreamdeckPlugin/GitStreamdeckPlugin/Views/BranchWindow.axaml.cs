@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using Avalonia.Styling;
 
 namespace Plugin.Views
 {
@@ -17,6 +18,7 @@ namespace Plugin.Views
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
+            var a = new Style(x => x.Name("InputBox"));
         }
     }
 }

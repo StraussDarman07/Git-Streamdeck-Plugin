@@ -25,19 +25,36 @@
 	<Border CornerRadius="10"
             BorderBrush="black"
             BorderThickness="1"
-            ClipToBounds="True" Padding="1"
+            ClipToBounds="True" 
+            Padding="1"
             Background="#141414">
 
 
 		<TextBox HorizontalAlignment="Stretch"
                  VerticalAlignment="Stretch"
                  FontSize="25"
-                 
+                 Foreground="White"
                  TextAlignment="Left"
                  VerticalContentAlignment="Center"
                  Background="#141414"
+                 CaretBrush="White"
                  Text="{Binding BranchName}"
                  Watermark="Enter branch name..."
-                 />
+                 Name="InputBox">
+            <TextBox.Styles>
+				<Style Selector="TextBox:focus /template/ Border">
+                    <Setter Property="Background" Value="#141414"/>
+                    <Setter Property="TextBox.Foreground" Value="White"/>
+                    <Setter Property="TextBox.BorderBrush" Value="#141414"/>
+                </Style>
+                <Style Selector="TextBox:pointerover /template/ Border">
+                    <Setter Property="Background" Value="#141414"/>
+                    <Setter Property="TextBox.Foreground" Value="White"/>
+                </Style>
+                <Style Selector="TextBox:empty /template/ TextBlock#PART_Watermark, TextBox:pointerover /template/ TextBlock#PART_FloatingWatermark">
+                    <Setter Property="Foreground" Value="White"/>
+                </Style>
+            </TextBox.Styles>
+        </TextBox>
 	</Border>
 </Window>
