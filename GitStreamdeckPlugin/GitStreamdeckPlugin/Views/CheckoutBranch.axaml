@@ -1,0 +1,86 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:Plugin.ViewModels"
+        mc:Ignorable="d" 
+        x:Class="Plugin.Views.CheckoutBranch"
+        Title="CheckoutBranch"
+        UseLayoutRounding="True"
+        WindowStartupLocation="CenterScreen"
+        d:DesignWidth="600"
+        Width="600"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaChromeHints="NoChrome"
+        ExtendClientAreaTitleBarHeightHint="-1"
+        TransparencyLevelHint="Transparent"
+        SystemDecorations="None"
+        CanResize="False"
+        Background="Transparent"
+        SizeToContent="Height" 
+        ShowInTaskbar="False"
+        ShowActivated="True">
+	<Design.DataContext>
+        <vm:BranchViewModel/>
+    </Design.DataContext>
+	<DockPanel LastChildFill="True">
+		<Border DockPanel.Dock="Top"
+                Height="75"
+                ClipToBounds="True"
+                CornerRadius="5"
+                Margin="0 0 0 5"
+                Background="#ff2b2b2b">
+			<DockPanel LastChildFill="True">
+				<Button Content="->"
+                        VerticalAlignment="Stretch"
+                        VerticalContentAlignment="Center"
+                        Width="75"
+                        HorizontalContentAlignment="Center"
+                        Background="DodgerBlue"
+                        DockPanel.Dock="Right"
+                        IsEnabled="{Binding IsEnabled}"/>
+                <Grid>
+                    <TextBox VerticalContentAlignment="Center"
+                             Text="{Binding SelectionWatermark}"
+                             FontSize="20"
+                             KeyDown="InputElement_OnKeyDown"
+                             IsHitTestVisible="False"
+                             Foreground="gray"
+                             Name="SelectionWatermark"
+                             UseFloatingWatermark="True"
+                             Watermark="{Binding SelectionWatermarkText}"
+                             IsEnabled="{Binding IsEnabled}">
+                    </TextBox>
+                    <TextBox Name="InputTextBox"
+                             Watermark="{Binding InputWatermarkText}"
+                             VerticalContentAlignment="Center"
+                             Text="{Binding BranchName}"
+                             FontSize="20"
+                             Background="Transparent"
+                             Foreground="white"
+                             UseFloatingWatermark="True"
+                             IsEnabled="{Binding IsEnabled}">
+                        <TextBox.Styles>
+                            <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
+                                <Setter Property="Background" Value="Transparent"/>
+                            </Style>
+                            <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+                                <Setter Property="Background" Value="Transparent"/>
+                            </Style>
+                        </TextBox.Styles>
+                    </TextBox>
+                </Grid>
+            </DockPanel>
+		</Border>
+        <Border CornerRadius="5" 
+                BorderBrush="black" 
+                BorderThickness="1"
+                ClipToBounds="True"
+                Name="CompleteBox">
+            <StackPanel>
+                <!--<ListBox Items="{Binding TestCollection}" SelectedItem="{Binding SelectedBranchName}"/>-->
+                <ListBox Items="{Binding FilteredBranches}"  SelectedItem="{Binding SelectedBranchName}"/>
+            </StackPanel>
+        </Border>
+    </DockPanel>
+</Window>

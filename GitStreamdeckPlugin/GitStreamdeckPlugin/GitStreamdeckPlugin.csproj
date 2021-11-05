@@ -17,6 +17,7 @@
     <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.10" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\submodules\git\LibGit2Sharp\LibGit2Sharp.csproj" />
     <ProjectReference Include="..\..\submodules\sdk\StreamdeckSDKCSharp\StreamdeckSDKCSharp.csproj" />
   </ItemGroup>
   <ItemGroup>

@@ -1,10 +1,7 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
+﻿using Avalonia.Controls;
 using Avalonia.Threading;
 using Elgato.StreamdeckSDK;
 using Elgato.StreamdeckSDK.Types.Common;
-using Elgato.StreamdeckSDK.Types.Events;
 using Plugin.ViewModels;
 using Plugin.Views;
 
@@ -14,7 +11,9 @@ namespace Plugin.Models
     {
         private ESDConnectionManager ConnectionManager { get; }
 
-        private Task EventLoop { get; set; }
+        private BranchViewModel BranchViewModel { get; } = new BranchViewModel();
+
+        public Window CheckoutBranchWindow => new CheckoutBranch {DataContext = BranchViewModel };
 
         public GitPluginManager(string[] args)
         {
@@ -24,13 +23,17 @@ namespace Plugin.Models
 
         public void Initialize()
         {
-            EventLoop = ConnectionManager.Run();
+            ConnectionManager.Run().ConfigureAwait(false);
             
             ConnectionManager.KeyDownForAction += (_, notification) =>
             {
                 Dispatcher.UIThread.InvokeAsync(() =>
                 {
-                    new BranchWindow{DataContext = new BranchViewModel()}.Show();
+                    Window window = CheckoutBranchWindow;
+                    window.Topmost = true;
+                    window.Show();
+                    window.Activate();
+                    window.Topmost = false;
                 });
             };
         }

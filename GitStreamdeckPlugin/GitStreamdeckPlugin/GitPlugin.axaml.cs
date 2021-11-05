@@ -1,12 +1,7 @@
-using System.Threading;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using Elgato.StreamdeckSDK;
-using Elgato.StreamdeckSDK.Types.Common;
 using Plugin.Models;
-using Plugin.ViewModels;
-using Plugin.Views;
 
 namespace Plugin
 {
@@ -24,6 +19,7 @@ namespace Plugin
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
                PluginManager = new GitPluginManager(desktop.Args);
+               //desktop.MainWindow = PluginManager.CheckoutBranchWindow;
             }
 
             base.OnFrameworkInitializationCompleted();
