@@ -1,20 +1,19 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
-using System.Threading.Tasks;
-using System.Transactions;
-using Avalonia.Animation;
 using ReactiveUI;
 using Avalonia.Threading;
 using DynamicData;
-using LibGit2Sharp;
+using Plugin.Models;
 
 namespace Plugin.ViewModels
 {
     public class BranchViewModel : ViewModelBase
     {
+        private const int FAVORITE_COUNT = 3;
+
         private string _branchName;
         public string BranchName
         {
@@ -25,6 +24,8 @@ namespace Plugin.ViewModels
                 this.RaisePropertyChanged(nameof(SelectionWatermark));
                 this.RaisePropertyChanged(nameof(InputWatermarkText));
                 this.RaisePropertyChanged(nameof(SelectionWatermarkText));
+                this.RaisePropertyChanged(nameof(AreFavoritesVisible));
+                this.RaisePropertyChanged(nameof(AreBranchesVisible));
             }
         }
 
@@ -52,26 +53,29 @@ namespace Plugin.ViewModels
             set => this.RaiseAndSetIfChanged(ref _isEnabled, value);
         }
 
-        private const string DefaultWatermark = "Enter Branch Name...";
+        public bool AreFavoritesVisible => string.IsNullOrWhiteSpace(BranchName);
+        public bool AreBranchesVisible => !AreFavoritesVisible;
 
-        private string Head { get; set; }
-        private string InputWatermarkText => string.IsNullOrWhiteSpace(BranchName) ? DefaultWatermark : Head;
-        private string SelectionWatermarkText => string.IsNullOrWhiteSpace(SelectedBranchName) || string.IsNullOrWhiteSpace(BranchName) ? string.Empty : Head;
+        private const string DEFAULT_WATERMARK = "Enter Branch Name...";
+        
+        private string InputWatermarkText => string.IsNullOrWhiteSpace(BranchName) ? DEFAULT_WATERMARK : (Repository?.Head ?? string.Empty);
+        private string SelectionWatermarkText => string.IsNullOrWhiteSpace(SelectedBranchName) || string.IsNullOrWhiteSpace(BranchName) ? string.Empty : (Repository?.Head ?? string.Empty);
 
         public string SelectionWatermark => string.IsNullOrWhiteSpace(BranchName) ? string.Empty : SelectedBranchName;
 
-        public ObservableCollection<string> TestCollection { get; set; } = new ObservableCollection<string>();
+        public ObservableCollection<string> FavoriteBranches { get; set; } = new ObservableCollection<string>();
 
+        private PluginRepository? Repository { get; set; }
+
+        public ReactiveCommand<string, Unit> CheckoutFavoriteBranch { get; }
+
+        public string Head => $"({Repository.Head})";
+        
         public BranchViewModel()
         {
             _branchName = string.Empty;
             _selectedBranchName = string.Empty;
             _isEnabled = true;
-            Head = string.Empty;
-
-            InitData();
-            TestCollection.AddRange(GetLocalBranches());
-
 
             IObservable<Func<string, bool>> filter = this.WhenAnyValue(vm => vm.BranchName)
                 .Select(BuildFilter);
@@ -89,27 +93,20 @@ namespace Plugin.ViewModels
                     return;
                 SelectedBranchName = branches.FirstOrDefault(branch => branch.StartsWith(input)) ?? string.Empty;
             });
+
+            CheckoutFavoriteBranch = ReactiveCommand.Create<string>(CheckoutBranch);
         }
 
-        private void InitData()
+        public void InitData(PluginRepository repository)
         {
-            Branches.AddRange(GetLocalBranches());
-        }
+            Repository = repository;
 
-        public void ResetData()
-        {
-            Branches.Edit(list =>
-            {
-                list.Clear();
-                list.AddRange(GetLocalBranches());
-            });
-        }
+            if (!Repository.Initialized)
+                Repository.Init();
 
-        private IEnumerable<string> GetLocalBranches()
-        {
-            using var repo = new Repository(@"C:\Users\thomas.stachl\Projects\video-hub");
-            Head = repo.Head.FriendlyName;
-            return repo.Branches.Where(b => !b.IsRemote).Select(b => b.FriendlyName).ToList();
+            Branches.AddRange(Repository.LocalBranches);
+
+            FavoriteBranches.AddRange(Repository.FavoriteBranches.Take(FAVORITE_COUNT));
         }
 
         private Func<string, bool> BuildFilter(string searchText)
@@ -145,17 +142,18 @@ namespace Plugin.ViewModels
                 SelectedBranchName = FilteredBranches[selectedIndex];
         }
 
-        public void OnEnterPressed()
+        public void OnEnterPressed() => CheckoutBranch(SelectedBranchName);
+
+        private void CheckoutBranch(string branch)
         {
             IsEnabled = false;
-            using var repo = new Repository(@"C:\Users\thomas.stachl\Projects\video-hub");
-            Branch branch = repo.Branches.FirstOrDefault(b => b.FriendlyName.Equals(SelectedBranchName, StringComparison.OrdinalIgnoreCase)) ?? throw new InvalidOperationException();
 
-            Commands.Checkout(repo, branch);
+            Repository?.CheckoutBranch(branch);
+
             IsEnabled = true;
-            Head = repo.Head.FriendlyName;
-            this.RaisePropertyChanged(nameof(Head));
+
             this.RaisePropertyChanged(nameof(SelectionWatermarkText));
+            this.RaisePropertyChanged(nameof(Head));
         }
     }
 }

@@ -24,9 +24,6 @@
     <Compile Update="GitPlugin.axaml.cs">
       <DependentUpon>GitPlugin.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\BranchWindow.axaml.cs">
-      <DependentUpon>BranchWindow.axaml</DependentUpon>
-    </Compile>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="deploy.bat&#xD;&#xA;" />

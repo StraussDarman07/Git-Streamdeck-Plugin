@@ -78,8 +78,52 @@
                 ClipToBounds="True"
                 Name="CompleteBox">
             <StackPanel>
-                <!--<ListBox Items="{Binding TestCollection}" SelectedItem="{Binding SelectedBranchName}"/>-->
-                <ListBox Items="{Binding FilteredBranches}"  SelectedItem="{Binding SelectedBranchName}"/>
+                <StackPanel IsVisible="{Binding AreFavoritesVisible}" HorizontalAlignment="Stretch">
+                    <DockPanel HorizontalAlignment="Stretch" LastChildFill="True">
+                        <Label Content="{Binding Head}"
+                               Background="#ff2b2b2b"
+                               Padding="5"
+                               Foreground="DodgerBlue"
+                               DockPanel.Dock="Right"/>
+                        <Label Content="Favorites:"
+                               Background="#ff2b2b2b"
+                               Padding="5"
+                               />
+                    </DockPanel>
+                    <ListBox Items="{Binding FavoriteBranches}"
+                             SelectedItem="{Binding SelectedBranchName}"
+                             ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                             HorizontalAlignment="Stretch"
+                             VirtualizationMode="None"
+                             DoubleTapped="OnFavoriteDoubleTapped">
+						<ListBox.Styles>
+							<Style Selector="ListBoxItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                <Setter Property="VerticalContentAlignment" Value="Center" />
+                            </Style>
+						</ListBox.Styles>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <DockPanel LastChildFill="True">
+									<Button Content="->"
+		                                    VerticalAlignment="Stretch"
+                                            VerticalContentAlignment="Center"
+                                            CornerRadius="90"
+                                            HorizontalContentAlignment="Center"
+                                            Background="Transparent"
+                                            BorderBrush="White"
+                                            DockPanel.Dock="Right"
+                                            Command="{Binding  $parent[Window].DataContext.CheckoutFavoriteBranch}"
+                                            CommandParameter="{Binding}"/>
+                                    <TextBlock Text="{Binding}" VerticalAlignment="Center"/>
+                                </DockPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+				</StackPanel>
+				<ListBox Items="{Binding FilteredBranches}" 
+                         IsVisible="{Binding AreBranchesVisible}" 
+                         SelectedItem="{Binding SelectedBranchName}"/>
             </StackPanel>
         </Border>
     </DockPanel>

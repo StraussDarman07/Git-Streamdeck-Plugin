@@ -28,7 +28,7 @@ namespace Plugin.Views
             inputTextBox?.AddHandler(KeyDownEvent, InputElement_OnKeyDown, RoutingStrategies.Tunnel);
 
             GotFocus += OnFocus;
-            Deactivated += OnLostFocus;
+            //Deactivated += OnLostFocus;
         }
 
         private void OnLostFocus(object? sender, EventArgs eventArgs)
@@ -58,7 +58,13 @@ namespace Plugin.Views
         private void OnBranchNameChanged(PropertyValue<BranchViewModel, string> propertyValue)
         {
             Border border = this.FindControl<Border>("CompleteBox");
-            border.IsVisible = !string.IsNullOrWhiteSpace(propertyValue.Value);
+            
+            bool showFavorites = false;
+
+            if (DataContext is BranchViewModel viewModel)
+                showFavorites = viewModel.AreFavoritesVisible;
+
+            border.IsVisible = !string.IsNullOrWhiteSpace(propertyValue.Value) || showFavorites;
         }
 
         private void OnWatermarkChanged(PropertyValue<BranchViewModel, string> propertyValue)
@@ -132,6 +138,14 @@ namespace Plugin.Views
                     offset = tb.Text.Length - 1;
 
                 watermarkBox.CaretIndex = offset;
+            }
+        }
+
+        private void OnFavoriteDoubleTapped(object? sender, RoutedEventArgs e)
+        {
+            if (DataContext is BranchViewModel viewModel)
+            {
+                viewModel.OnEnterPressed();
             }
         }
     }

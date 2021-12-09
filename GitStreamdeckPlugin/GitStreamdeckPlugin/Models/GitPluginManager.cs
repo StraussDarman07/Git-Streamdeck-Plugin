@@ -11,14 +11,18 @@ namespace Plugin.Models
     {
         private ESDConnectionManager ConnectionManager { get; }
 
+        private PluginRepository Repository { get; } = new PluginRepository(@"C:\Users\thomas.stachl\Projects\video-hub");
+
         private BranchViewModel BranchViewModel { get; } = new BranchViewModel();
 
         public Window CheckoutBranchWindow => new CheckoutBranch {DataContext = BranchViewModel };
-
+        
         public GitPluginManager(string[] args)
         {
             ESDAppArguments arguments = ESDAppArguments.Parse(args);
             ConnectionManager = new ESDConnectionManager(arguments.Port, arguments.PluginUUID, arguments.RegisterEvent);
+
+            BranchViewModel.InitData(Repository);
         }
 
         public void Initialize()
