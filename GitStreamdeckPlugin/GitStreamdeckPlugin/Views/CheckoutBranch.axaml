@@ -91,7 +91,7 @@
                                />
                     </DockPanel>
                     <ListBox Items="{Binding FavoriteBranches}"
-                             SelectedItem="{Binding SelectedBranchName}"
+                             SelectedItem="{Binding SelectedBranch}"
                              ScrollViewer.VerticalScrollBarVisibility="Disabled"
                              HorizontalAlignment="Stretch"
                              VirtualizationMode="None"
@@ -114,8 +114,8 @@
                                             BorderBrush="White"
                                             DockPanel.Dock="Right"
                                             Command="{Binding  $parent[Window].DataContext.CheckoutFavoriteBranch}"
-                                            CommandParameter="{Binding}"/>
-                                    <TextBlock Text="{Binding}" VerticalAlignment="Center"/>
+                                            CommandParameter="{Binding FriendlyName}"/>
+                                    <TextBlock Text="{Binding FriendlyName}" VerticalAlignment="Center"/>
                                 </DockPanel>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
@@ -123,7 +123,15 @@
 				</StackPanel>
 				<ListBox Items="{Binding FilteredBranches}" 
                          IsVisible="{Binding AreBranchesVisible}" 
-                         SelectedItem="{Binding SelectedBranchName}"/>
+                         SelectedItem="{Binding SelectedBranch}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <TextBlock Text="{Binding FriendlyName}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
             </StackPanel>
         </Border>
     </DockPanel>

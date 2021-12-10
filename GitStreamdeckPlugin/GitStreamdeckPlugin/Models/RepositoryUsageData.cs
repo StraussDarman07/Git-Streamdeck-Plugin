@@ -83,9 +83,8 @@ namespace Plugin.Models
         private static IEnumerable<string> GetSortedBranch(this UsageData usageData, string repository)
         {
             return usageData.UsageDataCollection
-                .Where(repo => repo.RepositoryName.Equals(repository, StringComparison.Ordinal))
                 .Select(repo => repo.BranchUsage)
-                .Aggregate((branches1, branches2) => new List<BranchUsageData> {branches1, branches2})
+                .Aggregate(new List<BranchUsageData>(), (branches1, branches2) => new List<BranchUsageData> { branches1, branches2 })
                 .OrderByDescending(branch => branch.Count)
                 .Select(branch => branch.Name);
         }
