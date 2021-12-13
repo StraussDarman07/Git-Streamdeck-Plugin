@@ -44,10 +44,24 @@ namespace Plugin.Models
         private void FetchRepository(Repository repo)
         {
             var remote = repo.Network.Remotes["origin"];
-            FetchOptions options = new FetchOptions {TagFetchMode = TagFetchMode.All};
+            FetchOptions options = new FetchOptions {CredentialsProvider = CredentialsHandler};
+            string logMessage = "";
             var refSpecs = remote.FetchRefSpecs.Select(x => x.Specification);
-            Commands.Fetch(repo, remote.Name, refSpecs, null, "Fetching remote");
+            Commands.Fetch(repo, remote.Name, refSpecs, options, logMessage);
             
+
+        }
+
+        private static Credentials CredentialsHandler(string url, string username, SupportedCredentialTypes types)
+        {
+            var sshDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".ssh");
+            return new SshUserKeyCredentials()
+            {
+                Username = username,
+                Passphrase = string.Empty,
+                PublicKey = Path.Combine(sshDir, "id_rsa.pub"),
+                PrivateKey = Path.Combine(sshDir, "id_rsa")
+            };
         }
 
         private void UpdateRepository(Repository repo)
