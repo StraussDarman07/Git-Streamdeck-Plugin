@@ -53,6 +53,9 @@ namespace Plugin.Models
 
         private static void UpdateBranch(this UsageData usageData, string repository, string branch)
         {
+            if (string.IsNullOrWhiteSpace(repository)) return;
+            if (string.IsNullOrWhiteSpace(branch)) return;
+
             RepoUsageData data = usageData.UsageDataCollection.FirstOrDefault(usageData => repository.Equals(usageData.RepositoryName, StringComparison.Ordinal));
 
             if (data.IsEmpty())

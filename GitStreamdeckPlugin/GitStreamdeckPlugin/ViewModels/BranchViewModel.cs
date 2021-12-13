@@ -24,13 +24,13 @@ namespace Plugin.ViewModels
             set => this.RaiseAndSetIfChanged(ref _branchName, value);
         }
 
-        private SourceList<Branch> Branches { get; } = new SourceList<Branch>();
+        private SourceList<PluginBranch> Branches { get; } = new SourceList<PluginBranch>();
 
-        private readonly ReadOnlyObservableCollection<Branch> _filteredBranches;
-        public ReadOnlyObservableCollection<Branch> FilteredBranches => _filteredBranches;
+        private readonly ReadOnlyObservableCollection<PluginBranch> _filteredBranches;
+        public ReadOnlyObservableCollection<PluginBranch> FilteredBranches => _filteredBranches;
 
-        private Branch? _selectedBranch;
-        public Branch? SelectedBranch
+        private PluginBranch? _selectedBranch;
+        public PluginBranch? SelectedBranch
         {
             get => _selectedBranch;
             set => this.RaiseAndSetIfChanged(ref _selectedBranch, value);
@@ -49,15 +49,15 @@ namespace Plugin.ViewModels
         private const string DEFAULT_WATERMARK = "Enter Branch Name...";
         
         private string InputWatermarkText => string.IsNullOrWhiteSpace(BranchName) ? DEFAULT_WATERMARK : (Repository?.Head ?? string.Empty);
-        private string SelectionWatermarkText => string.IsNullOrWhiteSpace(SelectedBranch?.FriendlyName) || string.IsNullOrWhiteSpace(BranchName) ? string.Empty : (Repository?.Head ?? string.Empty);
+        private string SelectionWatermarkText => string.IsNullOrWhiteSpace(SelectedBranch?.DisplayName) || string.IsNullOrWhiteSpace(BranchName) ? string.Empty : (Repository?.Head ?? string.Empty);
 
-        public string SelectionWatermark => string.IsNullOrWhiteSpace(BranchName) ? string.Empty : SelectedBranch?.FriendlyName ?? string.Empty;
+        public string SelectionWatermark => string.IsNullOrWhiteSpace(BranchName) ? string.Empty : SelectedBranch?.DisplayName ?? string.Empty;
 
-        public ObservableCollection<Branch> FavoriteBranches { get; set; } = new ObservableCollection<Branch>();
+        public ObservableCollection<PluginBranch> FavoriteBranches { get; set; } = new ObservableCollection<PluginBranch>();
 
         private PluginRepository? Repository { get; set; }
 
-        public ReactiveCommand<string, Unit> CheckoutFavoriteBranch { get; }
+        public ReactiveCommand<PluginBranch, Unit> CheckoutFavoriteBranch { get; }
 
         public string Head => $"({Repository?.Head})";
 
@@ -67,7 +67,7 @@ namespace Plugin.ViewModels
             _selectedBranch = null;
             _isEnabled = true;
 
-            IObservable<Func<Branch, bool>> filter = this.WhenAnyValue(vm => vm.BranchName)
+            IObservable<Func<PluginBranch, bool>> filter = this.WhenAnyValue(vm => vm.BranchName)
                 .Select(BuildFilter);
 
             Branches.Connect()
@@ -81,7 +81,7 @@ namespace Plugin.ViewModels
                 var (input, branches) = x;
                 if (input == null || branches == null)
                     return;
-                SelectedBranch = branches.FirstOrDefault(branch => branch.FriendlyName.StartsWith(input));
+                SelectedBranch = branches.FirstOrDefault(branch => branch.DisplayName.StartsWith(input));
             });
 
             this.WhenPropertyChanged(vm => vm.SelectedBranch).Subscribe(_ =>
@@ -99,7 +99,7 @@ namespace Plugin.ViewModels
                 this.RaisePropertyChanged(nameof(AreBranchesVisible));
             });
 
-            CheckoutFavoriteBranch = ReactiveCommand.Create<string>(CheckoutBranch);
+            CheckoutFavoriteBranch = ReactiveCommand.Create<PluginBranch>(CheckoutBranch);
         }
 
         public void InitData(PluginRepository repository)
@@ -109,34 +109,34 @@ namespace Plugin.ViewModels
             if (!Repository.Initialized)
                 Repository.Init();
 
-            Branches.AddRange(Repository.RemoteBranches);
+            Branches.AddRange(Repository.MergedBranches);
 
             FavoriteBranches.AddRange(Repository.FavoriteBranches.Take(FAVORITE_COUNT));
         }
 
-        private Func<Branch, bool> BuildFilter(string searchText)
+        private Func<PluginBranch, bool> BuildFilter(string searchText)
         {
             if (string.IsNullOrEmpty(searchText))
             {
                 return t => true;
             }
 
-            return t => t.FriendlyName.StartsWith(searchText, StringComparison.OrdinalIgnoreCase);
+            return t => t.DisplayName.StartsWith(searchText, StringComparison.OrdinalIgnoreCase);
         }
 
         public bool OnTabPressed()
         {
-            bool changing = BranchName != SelectedBranch?.FriendlyName;
+            bool changing = BranchName != SelectedBranch?.DisplayName;
 
             if (changing) 
-                BranchName = SelectedBranch?.FriendlyName ?? string.Empty;
+                BranchName = SelectedBranch?.DisplayName ?? string.Empty;
 
             return changing;
         }
 
         public void OnArrowKeyStroke(bool down)
         {
-            int selectedIndex = FilteredBranches.IndexOf(FilteredBranches.FirstOrDefault(branch => branch.Equals(SelectedBranch)));
+            int selectedIndex = FilteredBranches.IndexOf(FilteredBranches.FirstOrDefault(branch => branch.Branch.Equals(SelectedBranch?.Branch)));
 
             if (down)
                 selectedIndex++;
@@ -147,9 +147,9 @@ namespace Plugin.ViewModels
                 SelectedBranch = FilteredBranches[selectedIndex];
         }
 
-        public void OnEnterPressed() => CheckoutBranch(SelectedBranch?.FriendlyName ?? throw new ArgumentException());
+        public void OnEnterPressed() => CheckoutBranch(SelectedBranch ?? throw new ArgumentException());
 
-        private void CheckoutBranch(string branch)
+        private void CheckoutBranch(PluginBranch branch)
         {
             IsEnabled = false;
 

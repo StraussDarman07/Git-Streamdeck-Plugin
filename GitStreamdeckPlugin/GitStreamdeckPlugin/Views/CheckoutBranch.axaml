@@ -20,14 +20,18 @@
         SizeToContent="Height" 
         ShowInTaskbar="False"
         ShowActivated="True">
-	<Design.DataContext>
+    <Design.DataContext>
         <vm:BranchViewModel/>
     </Design.DataContext>
 	<DockPanel LastChildFill="True">
-		<Border DockPanel.Dock="Top"
+        <Label DockPanel.Dock="Top" 
+               Content="{Binding Repository.Name}"
+               Background="#ff2b2b2b"
+               CornerRadius="7 7 0 0"/>
+        <Border DockPanel.Dock="Top"
                 Height="75"
                 ClipToBounds="True"
-                CornerRadius="5"
+                CornerRadius="7"
                 Margin="0 0 0 5"
                 Background="#ff2b2b2b">
 			<DockPanel LastChildFill="True">
@@ -114,8 +118,8 @@
                                             BorderBrush="White"
                                             DockPanel.Dock="Right"
                                             Command="{Binding  $parent[Window].DataContext.CheckoutFavoriteBranch}"
-                                            CommandParameter="{Binding FriendlyName}"/>
-                                    <TextBlock Text="{Binding FriendlyName}" VerticalAlignment="Center"/>
+                                            CommandParameter="{Binding }"/>
+                                    <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center"/>
                                 </DockPanel>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
@@ -124,11 +128,25 @@
 				<ListBox Items="{Binding FilteredBranches}" 
                          IsVisible="{Binding AreBranchesVisible}" 
                          SelectedItem="{Binding SelectedBranch}">
+                    <ListBox.Styles>
+                        <Style Selector="ListBoxItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                            <Setter Property="VerticalContentAlignment" Value="Center" />
+                        </Style>
+                    </ListBox.Styles>
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <StackPanel>
-                                <TextBlock Text="{Binding FriendlyName}" VerticalAlignment="Center"/>
-                            </StackPanel>
+                            <DockPanel LastChildFill="True">
+								<!--TODO: Switch to image with tooltip - after I know how to design one-->
+                                <TextBlock DockPanel.Dock="Right" 
+                                           Text="remote" 
+                                           IsVisible="{Binding Branch.IsRemote}"/>
+                                <TextBlock DockPanel.Dock="Right" 
+                                           Text="tracking" 
+                                           IsVisible="{Binding Branch.IsTracking}"/>
+                                <TextBlock Text="{Binding DisplayName}" 
+                                           VerticalAlignment="Center"/>
+                            </DockPanel>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>

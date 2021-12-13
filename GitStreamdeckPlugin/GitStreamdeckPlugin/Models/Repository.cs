@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using LibGit2Sharp;
@@ -12,10 +13,13 @@ namespace Plugin.Models
 
         public string Head { get; private set; } = string.Empty;
 
-        public IEnumerable<Branch> LocalBranches { get; private set; } = new List<Branch>();
-        public IEnumerable<Branch> RemoteBranches { get; private set; } = new List<Branch>();
+        public string Name { get; private set; } = string.Empty;
 
-        public IEnumerable<Branch> FavoriteBranches { get; private set; } = new List<Branch>();
+        public IEnumerable<PluginBranch> LocalBranches { get; private set; } = new List<PluginBranch>();
+        public IEnumerable<PluginBranch> RemoteBranches { get; private set; } = new List<PluginBranch>();
+        public IEnumerable<PluginBranch> FavoriteBranches { get; private set; } = new List<PluginBranch>();
+
+        public IEnumerable<PluginBranch> MergedBranches { get; private set; } = new List<PluginBranch>();
 
         public bool Initialized { get; private set; }
 
@@ -39,31 +43,51 @@ namespace Plugin.Models
         {
             Head = repo.Head.FriendlyName;
 
+            Name = repo.Info.WorkingDirectory;
+
             LocalBranches = LoadLocalBranches(repo);
 
             RemoteBranches = LoadRemoteBranches(repo);
 
             FavoriteBranches = LoadFavoriteBranches(repo);
+
+            MergedBranches = LoadMergedBranches(repo);
         }
 
-        private static IEnumerable<Branch> LoadLocalBranches(Repository repository)
-            => repository.Branches.Where(b => !b.IsRemote).ToList();
+        private static IEnumerable<PluginBranch> LoadLocalBranches(Repository repository)
+            => repository.Branches.Where(b => !b.IsRemote).Select(b => new PluginBranch(b)).ToList();
 
-        private static IEnumerable<Branch> LoadRemoteBranches(Repository repository)
-            => repository.Branches.Where(b => b.IsRemote).ToList();
+        private static IEnumerable<PluginBranch> LoadRemoteBranches(Repository repository)
+            => repository.Branches.Where(b => b.IsRemote).Select(b => new PluginBranch(b)).ToList();
 
-        private static IEnumerable<Branch> LoadFavoriteBranches(Repository repository)
+        private static IEnumerable<PluginBranch> LoadFavoriteBranches(Repository repository)
         {
             IEnumerable<string> favoriteBranches = RepositoryUsageData.GetSortedBranch(repository.Info.WorkingDirectory);
+            IEnumerable<PluginBranch> localBranches = LoadLocalBranches(repository);
 
-            return LoadLocalBranches(repository).Where(branch => favoriteBranches.Any(fav => branch.FriendlyName.Equals(fav, StringComparison.Ordinal)));
+            //TODO prune invalid branches
+            return favoriteBranches.Where(fav => localBranches.Any(local => local.DisplayName.Equals(fav, StringComparison.Ordinal)))
+                .Select(fav => localBranches.First(local => local.DisplayName.Equals(fav, StringComparison.Ordinal)));
         }
 
-        public void CheckoutBranch(string branchName)
+        private static IEnumerable<PluginBranch> LoadMergedBranches(Repository repository)
+        {
+            IEnumerable<PluginBranch> localBranches = LoadLocalBranches(repository);
+            IEnumerable<PluginBranch> remoteBranches = LoadRemoteBranches(repository);
+
+            Debug.Assert(localBranches != null);
+            Debug.Assert(remoteBranches != null);
+
+            IEnumerable<PluginBranch> localTrackingBranches = localBranches.Where(local => local.Branch.IsTracking);
+            IEnumerable<PluginBranch> filteredRemotes = remoteBranches.Where(remote => !localTrackingBranches.Any(local => local.Branch.TrackedBranch.Equals(remote.Branch)));
+            return filteredRemotes.Concat(localBranches).ToList();
+        }
+
+        public void CheckoutBranch(PluginBranch checkoutBranch)
         {
             using var repo = new Repository(RepositoryPath);
 
-            Branch branch = repo.Branches.FirstOrDefault(b => b.FriendlyName.Equals(branchName, StringComparison.OrdinalIgnoreCase)) ??
+            Branch branch = repo.Branches.FirstOrDefault(b => b.Equals(checkoutBranch.Branch)) ??
                 throw new InvalidOperationException();
 
             if (branch.IsRemote)
@@ -87,7 +111,7 @@ namespace Plugin.Models
 
             UpdateRepository(repo);
 
-            RepositoryUsageData.UpdateBranch(repo.Info.WorkingDirectory, branchName);
+            RepositoryUsageData.UpdateBranch(repo.Info.WorkingDirectory, checkoutBranch.DisplayName);
         }
 
         private void HandleRemoteBranchCheckout(Repository repo, Branch remoteBranch)

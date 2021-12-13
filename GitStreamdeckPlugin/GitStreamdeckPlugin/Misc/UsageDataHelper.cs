@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using Avalonia;
+using Microsoft.VisualBasic;
 
 namespace Plugin.Misc
 {
@@ -21,9 +22,16 @@ namespace Plugin.Misc
         {
             IList<T> usageData;
 
+            string content = string.Empty;
+
             if (File.Exists(UsageDataLocation))
             {
-                usageData = JsonSerializer.Deserialize<IEnumerable<T>>(File.ReadAllText(UsageDataLocation)).ToList();
+                content = File.ReadAllText(UsageDataLocation);
+            }
+
+            if (!string.IsNullOrWhiteSpace(content))
+            {
+                usageData = JsonSerializer.Deserialize<IEnumerable<T>>(content).ToList();
             }
             else
             {
