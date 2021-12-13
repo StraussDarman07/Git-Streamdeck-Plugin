@@ -15,6 +15,7 @@
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
     <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="0.10.10" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.10" />
+    <PackageReference Include="LibGit2Sharp-SSH" Version="1.0.22" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\submodules\git\LibGit2Sharp\LibGit2Sharp.csproj" />

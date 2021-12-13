@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using LibGit2Sharp;
+using LibGit2Sharp.Handlers;
+using Plugin.Misc;
 
 namespace Plugin.Models
 {
@@ -32,11 +34,20 @@ namespace Plugin.Models
         {
             using var repo = new Repository(RepositoryPath);
 
-            //Commands.Fetch(repo);
+            FetchRepository(repo);
 
             UpdateRepository(repo);
 
             Initialized = true;
+        }
+
+        private void FetchRepository(Repository repo)
+        {
+            var remote = repo.Network.Remotes["origin"];
+            FetchOptions options = new FetchOptions {TagFetchMode = TagFetchMode.All};
+            var refSpecs = remote.FetchRefSpecs.Select(x => x.Specification);
+            Commands.Fetch(repo, remote.Name, refSpecs, null, "Fetching remote");
+            
         }
 
         private void UpdateRepository(Repository repo)
@@ -93,22 +104,6 @@ namespace Plugin.Models
             if (branch.IsRemote)
                 HandleRemoteBranchCheckout(repo, branch);
 
-            Branch newBranch = Commands.Checkout(repo, branch, new CheckoutOptions
-            {
-                CheckoutModifiers = CheckoutModifiers.None, 
-                CheckoutNotifyFlags = CheckoutNotifyFlags.None,
-                OnCheckoutNotify = (path, flags) =>
-                {
-                    if (flags == CheckoutNotifyFlags.Conflict)
-                    {
-                        throw new Exception("Conflict");
-                    }
-
-                    return true;
-                },
-
-            });
-
             UpdateRepository(repo);
 
             RepositoryUsageData.UpdateBranch(repo.Info.WorkingDirectory, checkoutBranch.DisplayName);
@@ -124,6 +119,14 @@ namespace Plugin.Models
             else
             {
                 //TODO Create Tracking Branch??
+                //TODO Maybe add an dialog for this?
+
+                Branch localBranch = repo.CreateBranch(remoteBranch.RemoveRemoteFromBranchName());
+                Remote remote = repo.Network.Remotes[remoteBranch.RemoteName];
+
+                repo.Branches.Update(localBranch, 
+                    b => b.Remote = remote.Name, 
+                    b => b.UpstreamBranch = localBranch.CanonicalName);
             }
         }
 

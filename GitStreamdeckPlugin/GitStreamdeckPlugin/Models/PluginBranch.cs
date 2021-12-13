@@ -1,4 +1,5 @@
 ﻿using LibGit2Sharp;
+using Plugin.Misc;
 
 namespace Plugin.Models
 {
@@ -12,9 +13,7 @@ namespace Plugin.Models
         {
             Branch = branch;
 
-            DisplayName = branch.IsRemote
-                ? branch.FriendlyName.Replace($"{branch.RemoteName}/", string.Empty)
-                : branch.FriendlyName;
+            DisplayName = branch.RemoveRemoteFromBranchName();
         }
     }
 }

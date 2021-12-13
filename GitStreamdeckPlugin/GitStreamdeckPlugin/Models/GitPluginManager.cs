@@ -11,7 +11,7 @@ namespace Plugin.Models
     {
         private ESDConnectionManager ConnectionManager { get; }
 
-        private PluginRepository Repository { get; } = new PluginRepository(@"C:\Users\thomas.stachl\Projects\video-hub");
+        private PluginRepository Repository { get; } = new PluginRepository(@"C:\Users\thomas.stachl\Projects\streamdeck-git-plugin");
 
         private BranchViewModel BranchViewModel { get; } = new BranchViewModel();
 
